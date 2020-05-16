@@ -52,10 +52,6 @@ private:
 	char* buf_head_c;
 	vector<char> soundhead;
 
-	int cutsize = 0;
-	vector<long int> cutstart;
-	vector<long int> cutstop;
-
 	wav_struct WAVdata;
 };
 

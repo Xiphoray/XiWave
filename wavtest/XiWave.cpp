@@ -55,7 +55,6 @@ bool XiWave::readwav(char* filename) {
     for (unsigned long i = 0; i < WAV.data_size; i++) {
         unsigned char data_sound = WAV.data[i];
         sounddata.push_back(data_sound);
-
     }
 
     sounddatasize = WAV.data_size;
@@ -78,16 +77,12 @@ void XiWave::writewav(char* filename) {
         wavfile.write((char*)&head_sound, sizeof(char));
     }
 
-
-
-    for (int j = 0; j < sounddatasize; j++) {
+    for (long int j = 0; j < sounddatasize; j++) {
         data_sound = sounddata[j];
         wavfile.write((char*)&data_sound, sizeof(char));
     }
 
-
     wavfile.close();
-
 }
 
 
