@@ -23,7 +23,11 @@ public:
 
 	bool readwav(char* filename);
 	void writewav(char* filename);
-	void cutpro();
+
+	void OneC8bit();
+	void TwoC8bit();
+	void OneC16bit();
+	void TwoC16bit();
 
 	char* get_data_buf() {
 		return buf_data_c;

@@ -55,6 +55,7 @@ bool XiWave::readwav(char* filename) {
     for (unsigned long i = 0; i < WAV.data_size; i++) {
         unsigned char data_sound = WAV.data[i];
         sounddata.push_back(data_sound);
+
     }
 
     sounddatasize = WAV.data_size;
@@ -78,17 +79,8 @@ void XiWave::writewav(char* filename) {
     }
 
 
-    for (int j = 0; j < cutstart[0]; j++) {
-        data_sound = sounddata[j];
-        wavfile.write((char*)&data_sound, sizeof(char));
-    }
-    for (int i = 0; i < cutsize - 1; i++) {
-        for (int j = cutstop[i]; j < cutstart[i + 1]; j++) {
-            data_sound = sounddata[j];
-            wavfile.write((char*)&data_sound, sizeof(char));
-        }
-    }
-    for (int j = cutstop[cutsize - 1]; j < sounddatasize; j++) {
+
+    for (int j = 0; j < sounddatasize; j++) {
         data_sound = sounddata[j];
         wavfile.write((char*)&data_sound, sizeof(char));
     }
@@ -98,22 +90,55 @@ void XiWave::writewav(char* filename) {
 
 }
 
-void XiWave::cutpro() {
-    bool tag = true;
-    cutsize = 0;
-    for (int i = 0; i < sounddatasize; i += 40000) {
-        if (tag) {
-            cutstart.push_back(i);
-            tag = false;
-        }
-        else {
-            cutstop.push_back(i);
-            cutsize++;
-            tag = true;
-        }
+
+void XiWave::OneC8bit() {
+    int value;
+    unsigned char data_sound;
+    for (long int i = 0; i < sounddatasize; i++) {
+        data_sound = sounddata[i];
+        value = (int)data_sound;
+        //TODO: 后续操作
+
     }
-    if (!tag) {
-        cutstop.push_back(sounddatasize);
-        cutsize++;
+
+}
+
+void XiWave::TwoC8bit() {
+    int valuel,valuer;
+    unsigned char data_soundl, data_soundr;
+    for (long int i = 0; i < sounddatasize; i++) {
+        data_soundl = sounddata[i];
+        data_soundr = sounddata[++i];
+        valuel = (int)data_soundl;
+        valuer = (int)data_soundr;
+        //TODO: 后续操作
+
+    }
+}
+
+void XiWave::OneC16bit() {
+    int value;
+    unsigned char data_soundhigh, data_soundlow;
+    for (long int i = 0; i < sounddatasize; i++) {
+        data_soundlow = sounddata[i];
+        data_soundhigh = sounddata[++i];
+        value = (int)(data_soundlow | data_soundhigh << 8);
+        //TODO: 后续操作
+
+    }
+}
+
+void XiWave::TwoC16bit() {
+    int valuel, valuer;
+    unsigned char data_lhigh, data_llow, data_rhigh, data_rlow;
+    for (long int i = 0; i < sounddatasize; i++) {
+        data_llow = sounddata[i];
+        data_lhigh = sounddata[++i];
+        data_rlow = sounddata[++i];
+        data_rhigh = sounddata[++i];
+        valuel = (int)(data_llow | data_lhigh << 8);
+        valuer = (int)(data_rlow | data_rhigh << 8);
+        //TODO: 后续操作
+
     }
 }
