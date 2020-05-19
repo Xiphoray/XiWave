@@ -13,8 +13,8 @@ struct wav_struct
 	unsigned long frequency;            //采样频率
 	unsigned short sample_num_bit;      //一个样本的位数
 	unsigned long data_size;            //数据长度
-	unsigned char* data;                         //音频数据 
-	unsigned char* head;
+	char* data;                         //音频数据 
+	char* head;
 };
 
 class XiWave

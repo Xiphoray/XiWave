@@ -6,6 +6,10 @@ bool XiWave::readwav(char* filename) {
     wav_struct WAV;
     wavfile.open(filename, ios::binary | ios::in);
 
+
+    unsigned short bit = 0x00;
+
+
     wavfile.seekg(0x14);
     wavfile.read((char*)&WAV.encodinformat, sizeof(WAV.encodinformat));
     WAVdata.encodinformat = WAV.encodinformat;
@@ -27,17 +31,34 @@ bool XiWave::readwav(char* filename) {
     wavfile.read((char*)&WAV.sample_num_bit, sizeof(WAV.sample_num_bit));
     WAVdata.sample_num_bit = WAV.sample_num_bit;
 
-    wavfile.seekg(0x28);
+    bit = 0x22;
+
+    char tt[4];
+
+    while (1) {
+        bit += 0x2;
+        wavfile.seekg(bit);
+        wavfile.read((char*)&tt, sizeof(tt));
+
+        if (tt[0] == 'd' && tt[1] == 'a' && tt[2] == 't' && tt[3] == 'a') {
+            break;
+        }
+    }
+    bit += 4;
+
+    wavfile.seekg(bit);
     wavfile.read((char*)&WAV.data_size, sizeof(WAV.data_size));
 
+    bit += 4;
     //begin to read data.
-    WAV.data = new unsigned char[WAV.data_size];
-    WAV.head = new unsigned char[44];
+    WAV.data = new char[WAV.data_size];
+    WAV.head = new char[bit];
 
     wavfile.seekg(0x00);
-    wavfile.read((char*)WAV.head, sizeof(char) * 44);
+    wavfile.read((char*)WAV.head, sizeof(char) * bit);
 
-    wavfile.seekg(0x2c);
+   
+    wavfile.seekg(bit);
     wavfile.read((char*)WAV.data, sizeof(char) * WAV.data_size);
 
     cout << "音频通道数  ：" << WAV.channel << endl;
@@ -45,15 +66,15 @@ bool XiWave::readwav(char* filename) {
     cout << "样本位数    ：" << WAV.sample_num_bit << endl;
     cout << "音频数据大小：" << WAV.data_size << endl;
 
-    for (unsigned long i = 0; i < 44; i++) {
-        unsigned char head_sound = WAV.head[i];
+    for (unsigned long i = 0; i < bit; i++) {
+        char head_sound = WAV.head[i];
         soundhead.push_back(head_sound);
     }
-    soundheadsize = 44;
+    soundheadsize = bit;
     buf_head_c = &soundhead[0];
 
     for (unsigned long i = 0; i < WAV.data_size; i++) {
-        unsigned char data_sound = WAV.data[i];
+        char data_sound = WAV.data[i];
         sounddata.push_back(data_sound);
     }
 
@@ -67,8 +88,8 @@ bool XiWave::readwav(char* filename) {
 void XiWave::writewav(char* filename) {
 
     fstream wavfile;
-    unsigned char head_sound;
-    unsigned char data_sound;
+    char head_sound;
+    char data_sound;
 
     wavfile.open(filename, ios::binary | ios::out | ios::trunc);
 
@@ -88,7 +109,7 @@ void XiWave::writewav(char* filename) {
 
 void XiWave::OneC8bit() {
     int value;
-    unsigned char data_sound;
+    char data_sound;
     for (long int i = 0; i < sounddatasize; i++) {
         data_sound = sounddata[i];
         value = (int)data_sound;
@@ -100,7 +121,7 @@ void XiWave::OneC8bit() {
 
 void XiWave::TwoC8bit() {
     int valuel,valuer;
-    unsigned char data_soundl, data_soundr;
+    char data_soundl, data_soundr;
     for (long int i = 0; i < sounddatasize; i++) {
         data_soundl = sounddata[i];
         data_soundr = sounddata[++i];
@@ -113,7 +134,7 @@ void XiWave::TwoC8bit() {
 
 void XiWave::OneC16bit() {
     int value;
-    unsigned char data_soundhigh, data_soundlow;
+    char data_soundhigh, data_soundlow;
     for (long int i = 0; i < sounddatasize; i++) {
         data_soundlow = sounddata[i];
         data_soundhigh = sounddata[++i];
@@ -125,7 +146,7 @@ void XiWave::OneC16bit() {
 
 void XiWave::TwoC16bit() {
     int valuel, valuer;
-    unsigned char data_lhigh, data_llow, data_rhigh, data_rlow;
+    char data_lhigh, data_llow, data_rhigh, data_rlow;
     for (long int i = 0; i < sounddatasize; i++) {
         data_llow = sounddata[i];
         data_lhigh = sounddata[++i];
